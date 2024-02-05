@@ -5,13 +5,51 @@ import { parseIngredients } from "../utils";
 
 const Recipe = () => {
 
-    const { recipe, ingredients, setIngredients, setShoppingList } = useContext(ForkiFyContext);
+    const { recipe, ingredients, setIngredients, setShoppingList, likeList, setLikeList } = useContext(ForkiFyContext);
+
+    const [servings, setServings] = useState(4);
+    const [isLIke, setIsLIke] = useState(likeList.findIndex(el => el.id === recipe.recipe_id) === -1 ? false : true);
+
 
     useEffect(() => {
         if(recipe?.ingredients){
             setIngredients(parseIngredients(recipe.ingredients))
         }
     },[recipe])
+
+    const btnTinyHandler = (type) => {
+        switch (type) {
+            case "minus":
+                servings > 1 && setServings((value) => value - 1)
+                break;
+            case "plus":
+                const newServings = servings + 1
+                setServings(newServings);
+                setIngredients((ingredients) => ingredients.map(el => ({ ...el, count: el.count * (newServings / servings - 1) })))
+                break
+        }
+    }
+
+    const btnLikeToggle = () => {
+        const index = likeList.findIndex(el => el.id === recipe.recipe_id);
+        if(index === -1 ){
+            console.log("Add")
+            setLikeList([...likeList, {
+                id: recipe.recipe_id,
+                title: recipe.title,
+                publisher: recipe.publisher,
+                img: recipe.image_url
+            }]);
+            setIsLIke(true)
+        }else{
+            console.log("remove")
+            const newArr = likeList;
+            newArr.splice(index,1)
+            //console.log(newArr)
+            setLikeList(newArr);
+            setIsLIke(false)
+        }
+    }
 
     if(!recipe) return <div className="recipe"></div>
 
@@ -28,23 +66,27 @@ const Recipe = () => {
                     <svg className="recipe__info-icon">
                         <use href="img/icons.svg#icon-stopwatch"></use>
                     </svg>
-                    <span className="recipe__info-data recipe__info-data--minutes">45</span>
+                    <span className="recipe__info-data recipe__info-data--minutes">
+                        {
+                            Math.ceil(ingredients.length / 3) * 15
+                        }
+                    </span>
                     <span className="recipe__info-text"> minutes</span>
                 </div>
                 <div className="recipe__info">
                     <svg className="recipe__info-icon">
                         <use href="img/icons.svg#icon-man"></use>
                     </svg>
-                    <span className="recipe__info-data recipe__info-data--people">4</span>
+                    <span className="recipe__info-data recipe__info-data--people">{servings}</span>
                     <span className="recipe__info-text"> servings</span>
 
                     <div className="recipe__info-buttons">
-                        <button className="btn-tiny">
+                        <button className="btn-tiny" onClick={() => btnTinyHandler("minus")}>
                             <svg>
                                 <use href="img/icons.svg#icon-circle-with-minus"></use>
                             </svg>
                         </button>
-                        <button className="btn-tiny">
+                        <button className="btn-tiny" onClick={() => btnTinyHandler("plus")}>
                             <svg>
                                 <use href="img/icons.svg#icon-circle-with-plus"></use>
                             </svg>
@@ -52,9 +94,9 @@ const Recipe = () => {
                     </div>
 
                 </div>
-                <button className="recipe__love">
+                <button className="recipe__love" onClick={btnLikeToggle}>
                     <svg className="header__likes">
-                        <use href="img/icons.svg#icon-heart-outlined"></use>
+                        <use href={isLIke ? "img/icons.svg#icon-heart" : "img/icons.svg#icon-heart-outlined"}></use>
                     </svg>
                 </button>
             </div>

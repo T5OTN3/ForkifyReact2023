@@ -12,10 +12,12 @@ function App() {
   const [recipe, setRecipe] = useState();
   const [ingredients, setIngredients] = useState([]);
   const [shoppingList, setShoppingList] = useState();
+  const [likeList, setLikeList] = useState([]);
+
 
   return (
     <div className="container">
-      <ForkiFyContext.Provider value={{ searchResult, setSearchResult, recipe, setRecipe, ingredients, setIngredients, shoppingList, setShoppingList }}>
+      <ForkiFyContext.Provider value={{ searchResult, setSearchResult, recipe, setRecipe, ingredients, setIngredients, shoppingList, setShoppingList, likeList, setLikeList }}>
         <Header />
         <Results />
         <Recipe />
