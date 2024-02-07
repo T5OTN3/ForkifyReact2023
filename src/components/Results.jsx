@@ -1,11 +1,12 @@
 import { useContext } from "react";
 import { ForkiFyContext } from "../App";
 import { limitRecipeTitle } from "../utils";
+import Pagination from "./Pagination";
 
 
 const Results = () => {
 
-    const { searchResult, setRecipe } = useContext(ForkiFyContext);
+    const { searchResult, setRecipe, startPage, endPage } = useContext(ForkiFyContext);
 
     const linkHandler = async (id) => {
         const res = await fetch(`https://forkify-api.herokuapp.com/api/get?rId=${id}`) 
@@ -14,11 +15,13 @@ const Results = () => {
         setRecipe(data.recipe)
     }
 
+    console.log(startPage, endPage)
+
     return(
         <div className="results">
             <ul className="results__list">
                 {
-                    searchResult.map((el, index) => (
+                    searchResult.slice(startPage, endPage).map((el, index) => (
                         <li key={index} onClick={() => linkHandler(el.recipe_id)}>
                             <a className="results__link" href="#"> {/* results__link--active */}
                                 <figure className="results__fig">
@@ -34,20 +37,7 @@ const Results = () => {
                 }
             </ul>
 
-            <div className="results__pages">
-                <button className="btn-inline results__btn--prev">
-                    <span>Page 1</span>
-                    <svg className="search__icon">
-                        <use href="img/icons.svg#icon-triangle-left"></use>
-                    </svg>
-                </button>
-                <button className="btn-inline results__btn--next">
-                    <span>Page 3</span>
-                    <svg className="search__icon">
-                        <use href="img/icons.svg#icon-triangle-right"></use>
-                    </svg>
-                </button>
-            </div>
+            <Pagination />
         </div>
     )
 }

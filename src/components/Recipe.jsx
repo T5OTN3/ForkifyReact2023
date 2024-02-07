@@ -8,8 +8,6 @@ const Recipe = () => {
     const { recipe, ingredients, setIngredients, setShoppingList, likeList, setLikeList } = useContext(ForkiFyContext);
 
     const [servings, setServings] = useState(4);
-    const [isLIke, setIsLIke] = useState(likeList.findIndex(el => el.id === recipe.recipe_id) === -1 ? false : true);
-
 
     useEffect(() => {
         if(recipe?.ingredients){
@@ -34,20 +32,22 @@ const Recipe = () => {
         const index = likeList.findIndex(el => el.id === recipe.recipe_id);
         if(index === -1 ){
             console.log("Add")
-            setLikeList([...likeList, {
+            const newArr = [...likeList, {
                 id: recipe.recipe_id,
                 title: recipe.title,
                 publisher: recipe.publisher,
                 img: recipe.image_url
-            }]);
-            setIsLIke(true)
+            }]
+            setLikeList(newArr);
+            window.localStorage.setItem("likes", JSON.stringify(newArr));
         }else{
             console.log("remove")
-            const newArr = likeList;
-            newArr.splice(index,1)
-            //console.log(newArr)
+            const newArr = [
+                ...likeList.slice(0,index),
+                ...likeList.slice(index + 1)
+            ]
             setLikeList(newArr);
-            setIsLIke(false)
+            window.localStorage.setItem("likes", JSON.stringify(newArr));
         }
     }
 
@@ -96,7 +96,7 @@ const Recipe = () => {
                 </div>
                 <button className="recipe__love" onClick={btnLikeToggle}>
                     <svg className="header__likes">
-                        <use href={isLIke ? "img/icons.svg#icon-heart" : "img/icons.svg#icon-heart-outlined"}></use>
+                        <use href={likeList.findIndex(el => el.id === recipe.recipe_id) === -1 ? "img/icons.svg#icon-heart-outlined" : "img/icons.svg#icon-heart"}></use>
                     </svg>
                 </button>
             </div>

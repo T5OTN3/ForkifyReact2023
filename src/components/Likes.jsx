@@ -6,7 +6,14 @@ import { limitRecipeTitle } from "../utils";
 
 const Like = () => {
 
-    const { likeList, setLikeList } = useContext(ForkiFyContext);
+    const { likeList, setRecipe } = useContext(ForkiFyContext);
+
+    const linkHandler = async (id) => {
+        const res = await fetch(`https://forkify-api.herokuapp.com/api/get?rId=${id}`) 
+        const data = await res.json();
+
+        setRecipe(data.recipe)
+    }
 
     if(!likeList.length) return <div></div>
 
@@ -20,8 +27,8 @@ const Like = () => {
             <div className="likes__panel">
                 <ul className="likes__list">
                     {
-                        likeList.map(el => (
-                        <li>
+                        likeList.map((el, index) => (
+                        <li key={index} onClick={() => linkHandler(el.id)}>
                             <a className="likes__link" href="#">
                                 <figure className="likes__fig">
                                     <img src={el.img} alt={el.title}/>
